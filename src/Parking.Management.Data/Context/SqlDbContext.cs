@@ -73,7 +73,6 @@ public class SqlDbContext: DbContext
         /* Config */
         optionsBuilder.UseLazyLoadingProxies();
         optionsBuilder.UseMySql(_configuration["SqlDb:ConnectionString"], ServerVersion.AutoDetect(_configuration["SqlDb:ConnectionString"]));
-        // optionsBuilder.UseMySql("Server=141.147.155.1;Port=6603;Database=parking_management;Uid=mariadb;Pwd=deV0ps@#!;", ServerVersion.AutoDetect("Server=141.147.155.1;Port=6603;Database=parking_management;Uid=mariadb;Pwd=deV0ps@#!;"));
         /* Base */
         base.OnConfiguring(optionsBuilder);
     }
