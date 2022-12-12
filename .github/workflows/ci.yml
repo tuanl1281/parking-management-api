@@ -8,15 +8,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: FranzDiebold/github-env-vars-action@v1.2.0
-      - name: Print environment variables
-        run: |
-          echo $GITHUB_REPOSITORY_SLUG + "\n"
-          echo $GITHUB_REPOSITORY_OWNER + "\n"
-          echo $GITHUB_REPOSITORY_OWNER_SLUG + "\n"
-          echo $GITHUB_REPOSITORY_NAME + "\n"
-          echo $GITHUB_REPOSITORY_NAME_SLUG + "\n"
-          echo $GITHUB_REF_SLUG + "\n"
-          echo $GITHUB_REF_NAME + "\n"
-          echo $GITHUB_REF_NAME_SLUG + "\n"
-          echo $GITHUB_SHA_SHORT + "\n"
+      - name: Set env.BRANCH
+        run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
+
+      - name: Is main?
+        if: env.BRANCH == 'main'
+        run: echo "This is 'main' branch"
