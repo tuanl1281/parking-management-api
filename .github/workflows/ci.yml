@@ -8,9 +8,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Set env.BRANCH
+      - name: Reference
+        run: echo "$GITHUB_REF"
+        
+      - name: Branch
         run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
-
-      - name: Is main?
-        if: env.BRANCH == 'main'
-        run: echo "This is 'main' branch"
