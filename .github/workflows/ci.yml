@@ -8,8 +8,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Reference
-        run: echo "$GITHUB_REF"
-        
-      - name: Branch
+      - 
+        name: Branch
         run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
+      -
+        name: Repository
+        run: echo "REPO_NAME=${{ github.event.repository.name }}" >> $GITHUB_ENV
