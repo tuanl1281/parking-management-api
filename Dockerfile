@@ -6,22 +6,22 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-bullseye-slim AS build
 WORKDIR /src
-COPY ["src/User.Management.Application/User.Management.Application.csproj", "User.Management.Application/"]
-COPY ["src/User.Management.Data/User.Management.Data.csproj", "User.Management.Data/"]
-COPY ["src/User.Management.Service/User.Management.Service.csproj", "User.Management.Service/"]
-COPY ["src/User.Management.ViewModel/User.Management.ViewModel.csproj", "User.Management.ViewModel/"]
-RUN dotnet restore "User.Management.Application/User.Management.Application.csproj"
+COPY ["src/Parking.Management.Application/Parking.Management.Application.csproj", "Parking.Management.Application/"]
+COPY ["src/Parking.Management.Data/Parking.Management.Data.csproj", "Parking.Management.Data/"]
+COPY ["src/Parking.Management.Service/Parking.Management.Service.csproj", "Parking.Management.Service/"]
+COPY ["src/Parking.Management.ViewModel/Parking.Management.ViewModel.csproj", "Parking.Management.ViewModel/"]
+RUN dotnet restore "Parking.Management.Application/Parking.Management.Application.csproj"
 COPY ./src .
 
-WORKDIR "/src/User.Management.Application"
-RUN dotnet build "User.Management.Application.csproj" -c Release -o /app/build
+WORKDIR "/src/Parking.Management.Application"
+RUN dotnet build "Parking.Management.Application.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "User.Management.Application.csproj" -c Release -o /app/publish
+RUN dotnet publish "Parking.Management.Application.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY --from=build /src/User.Management.Application/wwwroot ./wwwroot
-ENTRYPOINT ["dotnet", "User.Management.Application.dll"]
+COPY --from=build /src/Parking.Management.Application/wwwroot ./wwwroot
+ENTRYPOINT ["dotnet", "Parking.Management.Application.dll"]
 
