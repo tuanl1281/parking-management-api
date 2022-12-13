@@ -21,7 +21,7 @@ RUN dotnet publish "Parking.Management.Application.csproj" -c Release -o /app/pu
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
-COPY --from=build /src/Parking.Management.Application/wwwroot ./wwwroot
+COPY --from=publish /app/publish 
+
 ENTRYPOINT ["dotnet", "Parking.Management.Application.dll"]
 
