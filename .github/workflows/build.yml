@@ -26,5 +26,5 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: "${{ secrets.DOCKER_REGISTRY_USERNAME }}/$REPOSITORY:latest"
+          tags: "${{ secrets.DOCKER_REGISTRY_USERNAME }}/${{ env.REPOSITORY }}:latest"
           
