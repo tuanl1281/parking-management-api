@@ -1,7 +1,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-bullseye-slim AS base
-RUN apt-get update && apt-get install -y libgdiplus
 WORKDIR /app
-EXPOSE 5000
+RUN apt-get update && apt-get install -y libgdiplus
+ENV ASPNETCORE_URLS=http://+:80  
+EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-bullseye-slim AS build
 WORKDIR /src
