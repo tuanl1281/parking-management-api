@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-bullseye-slim AS base
-WORKDIR /app
 RUN apt-get update && apt-get install -y libgdiplus
-ENV ASPNETCORE_URLS=http://+:80  
+WORKDIR /app
 EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-bullseye-slim AS build
@@ -23,5 +22,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-ENTRYPOINT ["dotnet", "Parking.Management.Application.dll"]
+ENTRYPOINT ["dotnet", "Parking.Management.Application.dll", "--server.urls", "http://+:80;https://+:443"]
 
