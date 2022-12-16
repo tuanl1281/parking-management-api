@@ -19,12 +19,13 @@ jobs:
       - 
         name: Environment
         run: |
+          echo ""
           echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
           echo "REPOSITORY=${{ github.event.repository.name }}" >> $GITHUB_ENV
+          echo "ASPNETCORE_URLS=http://+:80" >> $GITHUB_ENV
       -
         name: Build
         uses: docker/build-push-action@v3
         with:
           push: true
           tags: "${{ secrets.DOCKER_REGISTRY_URL }}/${{ secrets.DOCKER_REGISTRY_USERNAME }}/${{ env.REPOSITORY }}:latest"
-          
