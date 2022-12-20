@@ -76,7 +76,6 @@ public class Startup
         /* Middleware */
         application.UseMiddleware<ErrorHandlerMiddleware>();
         /* For route */
-        application.UseHttpsRedirection();
         application.UseRouting();
         /* For authentication */
         application.UseAuthentication();
