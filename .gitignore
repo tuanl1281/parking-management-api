@@ -343,3 +343,5 @@ healthchecksdb
 # Custom
 .vs/*
 appsettings.*
+**/appsettings.*
+**/**/appsettings.*
