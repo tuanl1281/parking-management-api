@@ -1,9 +1,4 @@
-﻿using Hangfire;
-using Hangfire.MySql;
-using Hangfire.Dashboard;
-using Hangfire.MemoryStorage;
-using System.Net;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Parking.Management.Application.Middlewares;
 using Parking.Management.Application.Extensions;
-using Parking.Management.Data.Context;
 
 namespace Parking.Management.Application;
 
@@ -36,39 +30,6 @@ public class Startup
     
     public void ConfigureServices(IServiceCollection services)
     {
-        #region --- Hangfire ---
-        if (Environment.IsDevelopment())
-        {
-            services.AddHangfire(configuration =>
-                configuration
-                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                    .UseSimpleAssemblyNameTypeSerializer()
-                    .UseDefaultTypeSerializer()
-                    .UseMemoryStorage()
-                );
-        }
-        else
-        {
-            services.AddHangfire(configuration => configuration
-                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                    .UseSimpleAssemblyNameTypeSerializer()
-                    .UseRecommendedSerializerSettings()
-                    .UseStorage(
-                        new MySqlStorage(
-                            Configuration.GetConnectionString("Hangfire"),
-                            new MySqlStorageOptions {
-                                QueuePollInterval = TimeSpan.FromSeconds(10),
-                                JobExpirationCheckInterval = TimeSpan.FromHours(1),
-                                CountersAggregateInterval = TimeSpan.FromMinutes(5),
-                                DashboardJobListLimit = 25000,
-                                TransactionTimeout = TimeSpan.FromMinutes(1),
-                            }
-                        )
-                    ));
-        }
-        services.AddHangfireServer();
-        #endregion
-
         #region --- Versioning ---
         services.AddApiVersioning(_ =>
         {
@@ -110,11 +71,6 @@ public class Startup
     {
         if (environment.IsDevelopment())
             application.UseDeveloperExceptionPage();
-        /* Hangfire */
-        application.UseHangfireDashboard("/hangfire", new DashboardOptions()
-        {
-            Authorization = new List<IDashboardAuthorizationFilter>()
-        });
         /* Policy */
         application.UseCors("AllowAll");
         /* Middleware */

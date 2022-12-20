@@ -22,5 +22,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-ENTRYPOINT ["dotnet", "Parking.Management.Application.dll", "--server.urls", "http://+:80;https://+:443"]
+ENTRYPOINT ["dotnet", "Parking.Management.Application.dll"]
 
