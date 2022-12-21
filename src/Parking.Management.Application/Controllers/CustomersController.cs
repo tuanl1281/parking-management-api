@@ -28,6 +28,13 @@ public class CustomersController: BaseController
         var result = await _customerService.Get(id);
         return BuildResultResponse(result);
     }
+    
+    [HttpGet("{id}/Vehicle")]
+    public async Task<ActionResult<ResultResponseModel>> GetVehicle([FromRoute] Guid id)
+    {
+        var result = await _customerService.GetVehicle(id);
+        return BuildResultResponse(result);
+    }
 
     [HttpPost]
     public async Task<ActionResult<ResultResponseModel>> Add([FromBody] CustomerAddRequestModel model)
@@ -36,17 +43,31 @@ public class CustomersController: BaseController
         return BuildResultResponse(result);
     }
 
+    [HttpPost("{id}/AddVehicle")]
+    public async Task<ActionResult<ResultResponseModel>> AddVehicle([FromBody] List<CustomerVehicleAddRequestModel> models, [FromRoute] Guid id)
+    {
+        await _customerService.AddVehicle(models, id);
+        return BuildResultResponse(true);
+    }
+    
     [HttpPut("{id}")]
     public async Task<ActionResult<ResultResponseModel>> Update([FromBody] CustomerUpdateRequestModel model, [FromRoute] Guid id)
     {
         var result = await _customerService.Update(model, id);
         return BuildResultResponse(result);
     }
-    
+
     [HttpDelete("{id}")]
     public async Task<ActionResult<ResultResponseModel>> Delete([FromRoute] Guid id)
     {
         var result = await _customerService.Delete(id);
         return BuildResultResponse(result);
+    }
+    
+    [HttpDelete("{id}/RemoveVehicle")]
+    public async Task<ActionResult<ResultResponseModel>> RemoveVehicle([FromBody] List<Guid> models, [FromRoute] Guid id)
+    {
+        await _customerService.RemoveVehicle(models, id);
+        return BuildResultResponse(true);
     }
 }
