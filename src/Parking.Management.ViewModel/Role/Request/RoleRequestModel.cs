@@ -7,8 +7,6 @@ public class RoleAddRequestModel
     public string Code { get; set; }
     
     public string Description { get; set; }
-    
-    public Guid? TenantId { get; set; }
 }
 
 public class RoleUpdateRequestModel: RoleAddRequestModel

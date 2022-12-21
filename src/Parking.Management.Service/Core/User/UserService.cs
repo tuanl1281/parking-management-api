@@ -94,7 +94,7 @@ public class UserService: BaseService<SqlDbContext, Parking.Management.Data.Enti
                 throw new ServiceException(null, "User isn't existed");
 
             var userRole = await _unitOfWork.Repository<Parking.Management.Data.Entities.User.UserRole>().GetAsync(_ => _.UserId == userId);
-            if (userRole == null || userRole.Role.Code != RoleConstants.SuperAdmin || userRole.Role.Code != RoleConstants.Admin)
+            if (userRole == null || userRole.Role.Code != RoleConstants.Admin)
                 throw new UnauthorizedAccessException();
         }
         /* Query */

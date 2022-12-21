@@ -30,7 +30,6 @@ public class UsersController: BaseController
         return BuildResultResponse(result);
     }
     
-    [AllowAnonymous]
     [HttpPost]
     public async Task<ActionResult<ResultResponseModel>> Add([FromBody] UserAddRequestModel model)
     {

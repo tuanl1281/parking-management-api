@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Parking.Management.Application.Controllers.Common;
 using Parking.Management.Service.Core.Role;
