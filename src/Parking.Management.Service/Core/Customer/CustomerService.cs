@@ -23,6 +23,41 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
     {
     }
 
+
+    public override async Task<object> Add(CustomerAddRequestModel model)
+    {
+        #region --- Validate ---
+        if (string.IsNullOrEmpty(model.FirstName))
+            throw new ServiceException(null, "First name is required");
+
+        if (string.IsNullOrEmpty(model.LastName))
+            throw new ServiceException(null, "Last name is required");
+
+        if (string.IsNullOrEmpty(model.PhoneNumber))
+            throw new ServiceException(null, "Phone number is required");
+
+        if (string.IsNullOrEmpty(model.Address))
+            throw new ServiceException(null, "Address is required");
+
+        var customer = await _unitOfWork.Repository<Data.Entities.Customer.Customer>().GetAsync(_ => _.PhoneNumber == model.PhoneNumber);
+        if (customer != null)
+            throw new ServiceException(null, "Phone number is registered");
+        #endregion
+
+        /* Builder for customer */
+        customer = _mapper.Map<CustomerAddRequestModel, Data.Entities.Customer.Customer>(model);
+        /* Add customer */
+        _unitOfWork.Repository<Data.Entities.Customer.Customer>().Add(customer);        
+        /* Builder for wallet */
+        var wallet = new Data.Entities.Wallet.Wallet(0, customer.Id);
+        /* Add wallet */
+        _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().Add(wallet);
+        /* Save */
+        await _unitOfWork.SaveChangesAsync();
+        /* Return */
+        return customer.Id;
+    }
+    
     public async Task<List<CustomerVehicleResponseModel>> GetVehicle(Guid id)
     {
         #region --- Validate ---
