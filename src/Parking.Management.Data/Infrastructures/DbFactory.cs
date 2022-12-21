@@ -14,15 +14,13 @@ public class DbFactory<TContext>: Disposable, IDbFactory<TContext> where TContex
 {
     private TContext? _dbContext;
     private readonly IConfiguration _configuration;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     
-    public DbFactory(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+    public DbFactory(IConfiguration configuration)
     {
         _configuration = configuration;
-        _httpContextAccessor = httpContextAccessor;
     }
     
-    public TContext Init() => _dbContext ??= (TContext) Activator.CreateInstance(typeof(TContext), _configuration, _httpContextAccessor);
+    public TContext Init() => _dbContext ??= (TContext) Activator.CreateInstance(typeof(TContext), _configuration);
     
     protected override void DisposeCore()
     {

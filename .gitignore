@@ -345,3 +345,4 @@ healthchecksdb
 appsettings.*
 **/appsettings.*
 **/**/appsettings.*
+**/**/**/appsettings.*
