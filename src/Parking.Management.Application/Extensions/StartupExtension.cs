@@ -7,14 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Parking.Management.Data.Entities.Customer;
 using Parking.Management.Data.Infrastructures;
 using Parking.Management.Data.Repositories.Common;
-using Parking.Management.Service.Core.Customer;
-using Parking.Management.Service.MappingProfiles.Common;
 using Parking.Management.Service.Core.User;
 using Parking.Management.Service.Core.Role;
 using Parking.Management.Service.Core.Permission;
+using Parking.Management.Service.Core.Customer;
+using Parking.Management.Service.Core.Vehicle;
+using Parking.Management.Service.MappingProfiles.Common;
 
 namespace Parking.Management.Application.Extensions;
 
@@ -27,6 +27,7 @@ public static class StartupExtension
         services.AddTransient<IPermissionService, PermissionService>();
 
         services.AddTransient<ICustomerService, CustomerService>();
+        services.AddTransient<IVehicleService, VehicleService>();
     }
 
     public static void AddRepositories(this IServiceCollection services)

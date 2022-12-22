@@ -3,6 +3,7 @@ using Parking.Management.Application.Controllers.Common;
 using Parking.Management.Service.Core.Customer;
 using Parking.Management.ViewModel.Common.Response;
 using Parking.Management.ViewModel.Customer.Request;
+using Parking.Management.ViewModel.Vehicle.Request;
 
 namespace Parking.Management.Application.Controllers;
 
@@ -44,7 +45,7 @@ public class CustomersController: BaseController
     }
 
     [HttpPost("{id}/AddVehicle")]
-    public async Task<ActionResult<ResultResponseModel>> AddVehicle([FromBody] List<CustomerVehicleAddRequestModel> models, [FromRoute] Guid id)
+    public async Task<ActionResult<ResultResponseModel>> AddVehicle([FromBody] List<VehicleAddRequestModel> models, [FromRoute] Guid id)
     {
         await _customerService.AddVehicle(models, id);
         return BuildResultResponse(true);

@@ -5,16 +5,18 @@ using Parking.Management.Service.Core.Common;
 using Parking.Management.ViewModel.Common.Exception;
 using Parking.Management.ViewModel.Customer.Request;
 using Parking.Management.ViewModel.Customer.Response;
+using Parking.Management.ViewModel.Vehicle.Request;
+using Parking.Management.ViewModel.Vehicle.Response;
 
 namespace Parking.Management.Service.Core.Customer;
 
 public interface ICustomerService: IBaseService<SqlDbContext, Parking.Management.Data.Entities.Customer.Customer, CustomerFilterRequestModel, CustomerResponseModel, CustomerAddRequestModel, CustomerUpdateRequestModel>
 {
-    Task<List<CustomerVehicleResponseModel>> GetVehicle(Guid id);
-    
-    Task AddVehicle(List<CustomerVehicleAddRequestModel> vehicles, Guid id);
+    Task AddVehicle(List<VehicleAddRequestModel> models, Guid id);
 
     Task RemoveVehicle(List<Guid> vehiclesIds, Guid id);
+    
+    Task<List<VehicleResponseModel>> GetVehicle(Guid id);
 }
 
 public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.Entities.Customer.Customer, CustomerFilterRequestModel, CustomerResponseModel, CustomerAddRequestModel, CustomerUpdateRequestModel>, ICustomerService
@@ -22,7 +24,6 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
     public CustomerService(IMapper mapper, IUnitOfWork<SqlDbContext> unitOfWork) : base(mapper, unitOfWork)
     {
     }
-
 
     public override async Task<object> Add(CustomerAddRequestModel model)
     {
@@ -57,24 +58,8 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         /* Return */
         return customer.Id;
     }
-    
-    public async Task<List<CustomerVehicleResponseModel>> GetVehicle(Guid id)
-    {
-        #region --- Validate ---
-        var customer = await _unitOfWork.Repository<Data.Entities.Customer.Customer>().GetAsync(_ => _.Id == id);
-        if (customer == null)
-            throw new ServiceException(null, "Customer isn't existed");
-        #endregion
-    
-        /* Query */
-        var customerVehicles = await _unitOfWork.Repository<Data.Entities.Customer.CustomerVehicle>().GetManyAsync(_ => _.CustomerId == customer.Id);
-        /* Builder */
-        var customerVehicleModels = _mapper.Map<List<Data.Entities.Customer.CustomerVehicle>, List<CustomerVehicleResponseModel>>(customerVehicles.ToList());
-        /* Return */
-        return customerVehicleModels;
-    }
-    
-    public async Task AddVehicle(List<CustomerVehicleAddRequestModel> vehicles, Guid id)
+
+    public async Task AddVehicle(List<VehicleAddRequestModel> models, Guid id)
     {
         #region --- Validate ---
         var customer = await _unitOfWork.Repository<Data.Entities.Customer.Customer>().GetAsync(_ => _.Id == id);
@@ -83,12 +68,12 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         #endregion
         
         /* Do it */
-        foreach (var vehicle in vehicles)
+        foreach (var model in models)
         {
-            var customerVehicle = _mapper.Map<CustomerVehicleAddRequestModel, Data.Entities.Customer.CustomerVehicle>(vehicle);
-            customerVehicle.CustomerId = customer.Id;
-
-            _unitOfWork.DbContext.CustomerVehicles.Add(customerVehicle);
+            var vehicle = _mapper.Map<VehicleAddRequestModel, Data.Entities.Vehicle.Vehicle>(model);
+            vehicle.CustomerId = customer.Id;
+            /* Add */
+            _unitOfWork.Repository<Data.Entities.Vehicle.Vehicle>().Add(vehicle);
         }
         /* Save */
         await _unitOfWork.DbContext.SaveChangesAsync();
@@ -103,10 +88,31 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         #endregion
         
         /* Do it */
-        var customerVehicles = await _unitOfWork.Repository<Data.Entities.Customer.CustomerVehicle>().GetManyAsync(_ => _.CustomerId == customer.Id);
-        foreach (var customerVehicle in customerVehicles)
-            _unitOfWork.DbContext.CustomerVehicles.Remove(customerVehicle);
+        var vehicles = await _unitOfWork.Repository<Data.Entities.Vehicle.Vehicle>().GetManyAsync(_ => _.CustomerId == customer.Id);
+        foreach (var vehicle in vehicles)
+        {
+            vehicle.CustomerId = null;
+            /* Update */
+            _unitOfWork.Repository<Data.Entities.Vehicle.Vehicle>().Update(vehicle);
+        }
         /* Save */
         await _unitOfWork.DbContext.SaveChangesAsync();
     }
+        
+    public async Task<List<VehicleResponseModel>> GetVehicle(Guid id)
+    {
+        #region --- Validate ---
+        var customer = await _unitOfWork.Repository<Data.Entities.Customer.Customer>().GetAsync(_ => _.Id == id);
+        if (customer == null)
+            throw new ServiceException(null, "Customer isn't existed");
+        #endregion
+    
+        /* Query */
+        var vehicles = await _unitOfWork.Repository<Data.Entities.Vehicle.Vehicle>().GetManyAsync(_ => _.CustomerId == customer.Id);
+        /* Builder */
+        var vehicleModels = _mapper.Map<List<Data.Entities.Vehicle.Vehicle>, List<VehicleResponseModel>>(vehicles.ToList());
+        /* Return */
+        return vehicleModels;
+    }
+
 }

@@ -14,6 +14,8 @@ using Parking.Management.Data.Configurations.Permission;
 using Parking.Management.Data.Configurations.Customer;
 using Parking.Management.Data.Configurations.Wallet;
 using Parking.Management.Data.Configurations.Transaction;
+using Parking.Management.Data.Configurations.Vehicle;
+using Parking.Management.Data.Entities.Vehicle;
 
 namespace Parking.Management.Data.Context;
 
@@ -54,8 +56,6 @@ public class SqlDbContext: DbContext
 
     #region --- Customer ---
     public DbSet<Customer> Customers { get; set; }
-    
-    public DbSet<CustomerVehicle> CustomerVehicles { get; set; }
     #endregion
 
     #region --- Wallet ---
@@ -66,6 +66,12 @@ public class SqlDbContext: DbContext
     public DbSet<Transaction> Transactions { get; set; }
     
     public DbSet<TransactionType> TransactionTypes { get; set; }
+    #endregion
+    
+    #region --- Vehicle ---
+    public DbSet<Vehicle> Vehicles { get; set; }
+    
+    public DbSet<VehicleLog> VehicleLogs { get; set; }
     #endregion
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -96,7 +102,6 @@ public class SqlDbContext: DbContext
         
         #region --- Customer ---
         modelBuilder.ApplyConfiguration(new CustomerConfigurations());
-        modelBuilder.ApplyConfiguration(new CustomerVehicleConfigurations());
         #endregion
         
         #region --- Wallet ---
@@ -106,6 +111,11 @@ public class SqlDbContext: DbContext
         #region --- Transaction ---
         modelBuilder.ApplyConfiguration(new TransactionConfigurations());
         modelBuilder.ApplyConfiguration(new TransactionTypeConfigurations());
+        #endregion
+        
+        #region --- Vehicle ---
+        modelBuilder.ApplyConfiguration(new VehicleConfigurations());
+        modelBuilder.ApplyConfiguration(new VehicleLogConfigurations());
         #endregion
         
         /* Apply global filter */

@@ -6,7 +6,7 @@ namespace Parking.Management.Data.Entities.Customer;
 [Table("Customers")]
 public class Customer: BaseEntity
 {
-    public Customer(string firstName, string lastName, string phoneNumber, string address)
+    public Customer(string firstName, string lastName, string phoneNumber, string address): base()
     {
         FirstName = firstName;
         LastName = lastName;
@@ -24,5 +24,5 @@ public class Customer: BaseEntity
     
     public virtual Entities.Wallet.Wallet Wallet { get; set; }
     
-    public virtual ICollection<Entities.Customer.CustomerVehicle> Vehicles { get; set; }
+    public virtual ICollection<Entities.Vehicle.Vehicle> Vehicles { get; set; }
 }

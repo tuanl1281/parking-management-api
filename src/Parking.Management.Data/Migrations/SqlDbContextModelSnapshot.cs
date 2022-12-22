@@ -52,40 +52,6 @@ namespace Parking.Management.Data.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("Parking.Management.Data.Entities.Customer.CustomerVehicle", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Brand")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("LicenceNumber")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("CustomerVehicle");
-                });
-
             modelBuilder.Entity("Parking.Management.Data.Entities.Permission.Permission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -314,6 +280,73 @@ namespace Parking.Management.Data.Migrations
                     b.ToTable("UserRoles");
                 });
 
+            modelBuilder.Entity("Parking.Management.Data.Entities.Vehicle.Vehicle", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid?>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LicenseNumber")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Vehicles");
+                });
+
+            modelBuilder.Entity("Parking.Management.Data.Entities.Vehicle.VehicleLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ImageRecognition")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("VehicleId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("VehicleLogs");
+                });
+
             modelBuilder.Entity("Parking.Management.Data.Entities.Wallet.Wallet", b =>
                 {
                     b.Property<Guid>("Id")
@@ -338,17 +371,6 @@ namespace Parking.Management.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Wallets");
-                });
-
-            modelBuilder.Entity("Parking.Management.Data.Entities.Customer.CustomerVehicle", b =>
-                {
-                    b.HasOne("Parking.Management.Data.Entities.Customer.Customer", "Customer")
-                        .WithMany("Vehicles")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("Parking.Management.Data.Entities.Role.RolePermission", b =>
@@ -427,6 +449,28 @@ namespace Parking.Management.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Parking.Management.Data.Entities.Vehicle.Vehicle", b =>
+                {
+                    b.HasOne("Parking.Management.Data.Entities.Customer.Customer", "Customer")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Parking.Management.Data.Entities.Vehicle.VehicleLog", b =>
+                {
+                    b.HasOne("Parking.Management.Data.Entities.Vehicle.Vehicle", "Vehicle")
+                        .WithMany("Logs")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vehicle");
+                });
+
             modelBuilder.Entity("Parking.Management.Data.Entities.Wallet.Wallet", b =>
                 {
                     b.HasOne("Parking.Management.Data.Entities.Customer.Customer", "Customer")
@@ -461,6 +505,11 @@ namespace Parking.Management.Data.Migrations
             modelBuilder.Entity("Parking.Management.Data.Entities.Transaction.TransactionType", b =>
                 {
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Parking.Management.Data.Entities.Vehicle.Vehicle", b =>
+                {
+                    b.Navigation("Logs");
                 });
 
             modelBuilder.Entity("Parking.Management.Data.Entities.Wallet.Wallet", b =>
