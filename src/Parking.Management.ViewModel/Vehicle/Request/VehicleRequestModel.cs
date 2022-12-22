@@ -7,7 +7,7 @@ public class VehicleAddRequestModel
 {
     public VehicleTypes Type { get; set; }
     
-    public string Name { get; set; }
+    public string? Name { get; set; }
     
     public string Brand { get; set; }
     
