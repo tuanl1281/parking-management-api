@@ -3,6 +3,7 @@ using Parking.Management.Application.Controllers.Common;
 using Parking.Management.Service.Core.Customer;
 using Parking.Management.ViewModel.Common.Response;
 using Parking.Management.ViewModel.Customer.Request;
+using Parking.Management.ViewModel.Transaction.Request;
 using Parking.Management.ViewModel.Vehicle.Request;
 
 namespace Parking.Management.Application.Controllers;
@@ -37,6 +38,13 @@ public class CustomersController: BaseController
         return BuildResultResponse(result);
     }
 
+    [HttpGet("{id}/Transaction")]
+    public async Task<ActionResult<ResultResponseModel>> GetTransaction([FromQuery] TransactionFilterRequestModel filter, [FromRoute] Guid id)
+    {
+        var result = await _customerService.GetTransaction(filter, id);
+        return BuildResultResponse(result);
+    }
+    
     [HttpPost]
     public async Task<ActionResult<ResultResponseModel>> Add([FromBody] CustomerAddRequestModel model)
     {

@@ -5,6 +5,8 @@ using Parking.Management.Service.Core.Common;
 using Parking.Management.ViewModel.Common.Exception;
 using Parking.Management.ViewModel.Customer.Request;
 using Parking.Management.ViewModel.Customer.Response;
+using Parking.Management.ViewModel.Transaction.Request;
+using Parking.Management.ViewModel.Transaction.Response;
 using Parking.Management.ViewModel.Vehicle.Request;
 using Parking.Management.ViewModel.Vehicle.Response;
 
@@ -17,6 +19,8 @@ public interface ICustomerService: IBaseService<SqlDbContext, Parking.Management
     Task RemoveVehicle(List<Guid> vehiclesIds, Guid id);
     
     Task<List<VehicleResponseModel>> GetVehicle(Guid id);
+
+    Task<List<TransactionResponseModel>> GetTransaction(TransactionFilterRequestModel filter, Guid id);
 }
 
 public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.Entities.Customer.Customer, CustomerFilterRequestModel, CustomerResponseModel, CustomerAddRequestModel, CustomerUpdateRequestModel>, ICustomerService
@@ -115,4 +119,23 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         return vehicleModels;
     }
 
+    public async Task<List<TransactionResponseModel>> GetTransaction(TransactionFilterRequestModel filter, Guid id)
+    {
+        #region --- Validate ---
+        var customer = await _unitOfWork.Repository<Data.Entities.Customer.Customer>().GetAsync(_ => _.Id == id);
+        if (customer == null)
+            throw new ServiceException(null, "Customer isn't existed");
+
+        var wallet = await _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().GetAsync(_ => _.CustomerId == customer.Id);
+        if (wallet == null)
+            return new List<TransactionResponseModel>();
+        #endregion
+
+        /* Query */
+        var transactions = await _unitOfWork.Repository<Data.Entities.Transaction.Transaction>().GetManyAsync(_ => _.WalletId == wallet.Id);
+        /* Builder */
+        var transactionModels = _mapper.Map<List<Data.Entities.Transaction.Transaction>, List<TransactionResponseModel>>(transactions.ToList());
+        /* Return */
+        return transactionModels;
+    }
 }

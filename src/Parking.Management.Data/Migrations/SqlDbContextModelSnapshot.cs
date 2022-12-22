@@ -144,57 +144,26 @@ namespace Parking.Management.Data.Migrations
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
                     b.Property<double>("NewestBalance")
                         .HasColumnType("double");
 
                     b.Property<DateTime>("Time")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("TransactionTypeId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("WalletId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TransactionTypeId");
-
                     b.HasIndex("WalletId");
 
                     b.ToTable("Transactions");
-                });
-
-            modelBuilder.Entity("Parking.Management.Data.Entities.Transaction.TransactionType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("double");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TransactionTypes");
                 });
 
             modelBuilder.Entity("Parking.Management.Data.Entities.User.User", b =>
@@ -394,19 +363,11 @@ namespace Parking.Management.Data.Migrations
 
             modelBuilder.Entity("Parking.Management.Data.Entities.Transaction.Transaction", b =>
                 {
-                    b.HasOne("Parking.Management.Data.Entities.Transaction.TransactionType", "Type")
-                        .WithMany("Transactions")
-                        .HasForeignKey("TransactionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Parking.Management.Data.Entities.Wallet.Wallet", "Wallet")
                         .WithMany("Transactions")
                         .HasForeignKey("WalletId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Type");
 
                     b.Navigation("Wallet");
                 });
@@ -500,11 +461,6 @@ namespace Parking.Management.Data.Migrations
             modelBuilder.Entity("Parking.Management.Data.Entities.Role.Role", b =>
                 {
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("Parking.Management.Data.Entities.Transaction.TransactionType", b =>
-                {
-                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Parking.Management.Data.Entities.Vehicle.Vehicle", b =>

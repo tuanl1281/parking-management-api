@@ -64,8 +64,6 @@ public class SqlDbContext: DbContext
     
     #region --- Transaction ---
     public DbSet<Transaction> Transactions { get; set; }
-    
-    public DbSet<TransactionType> TransactionTypes { get; set; }
     #endregion
     
     #region --- Vehicle ---
@@ -110,7 +108,6 @@ public class SqlDbContext: DbContext
 
         #region --- Transaction ---
         modelBuilder.ApplyConfiguration(new TransactionConfigurations());
-        modelBuilder.ApplyConfiguration(new TransactionTypeConfigurations());
         #endregion
         
         #region --- Vehicle ---
