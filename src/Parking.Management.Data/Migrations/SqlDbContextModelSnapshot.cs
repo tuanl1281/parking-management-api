@@ -26,7 +26,6 @@ namespace Parking.Management.Data.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("DateCreated")
@@ -36,15 +35,12 @@ namespace Parking.Management.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -59,7 +55,6 @@ namespace Parking.Management.Data.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Code")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("DateCreated")
@@ -69,7 +64,6 @@ namespace Parking.Management.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -84,7 +78,6 @@ namespace Parking.Management.Data.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Code")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("DateCreated")
@@ -94,7 +87,6 @@ namespace Parking.Management.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -179,15 +171,12 @@ namespace Parking.Management.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("FullName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -256,11 +245,9 @@ namespace Parking.Management.Data.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Brand")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<Guid?>("CustomerId")
-                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("DateCreated")
@@ -270,11 +257,9 @@ namespace Parking.Management.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("LicenseNumber")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("Type")
@@ -300,7 +285,6 @@ namespace Parking.Management.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("ImageRecognition")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("Time")
@@ -415,8 +399,7 @@ namespace Parking.Management.Data.Migrations
                     b.HasOne("Parking.Management.Data.Entities.Customer.Customer", "Customer")
                         .WithMany("Vehicles")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Customer");
                 });
@@ -447,8 +430,7 @@ namespace Parking.Management.Data.Migrations
                 {
                     b.Navigation("Vehicles");
 
-                    b.Navigation("Wallet")
-                        .IsRequired();
+                    b.Navigation("Wallet");
                 });
 
             modelBuilder.Entity("Parking.Management.Data.Entities.Permission.Permission", b =>
