@@ -4,5 +4,5 @@ public class VehicleLogResponseModel
 {
     public DateTime Time { get; set; }
     
-    public string ImageRecognition { get; set; }
+    public string? ImageRecognition { get; set; }
 }

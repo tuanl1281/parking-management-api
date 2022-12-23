@@ -10,9 +10,9 @@ public class VehicleAddRequestModel
     
     public string? Name { get; set; }
     
-    public string Brand { get; set; }
+    public string? Brand { get; set; }
     
-    public string LicenseNumber { get; set; }
+    public string? LicenseNumber { get; set; }
     
     public Guid? CustomerId { get; set; }
 }
@@ -25,16 +25,16 @@ public class VehicleUpdateRequestModel: VehicleAddRequestModel
 public class VehicleFilterRequestModel: PagingFilterRequest
 {
     [FromQuery(Name = "keyword")]
-    public string Keyword { get; set; }
+    public string? Keyword { get; set; }
     
     [FromQuery(Name = "name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
     
     [FromQuery(Name = "brand")]
-    public string Brand { get; set; }
+    public string? Brand { get; set; }
 
     [FromQuery(Name = "licenseNumber")]
-    public string LicenseNumber { get; set; }
+    public string? LicenseNumber { get; set; }
     
     [FromQuery(Name = "type")]
     public VehicleTypes? Type { get; set; }
