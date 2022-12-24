@@ -1,9 +1,9 @@
-using System.Text.Json;
-using System.Text.RegularExpressions;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using Parking.Management.Data.Context;
 using Parking.Management.Data.Entities.Vehicle;
 using Parking.Management.Data.Infrastructures;
@@ -58,7 +58,7 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
         /* Query */
         var vehicles = await _unitOfWork.Repository<Data.Entities.Vehicle.Vehicle>().GetAllAsync();
         foreach (var vehicle in vehicles)
-            vehicle.LicenseNumber = (new Regex("[_-]")).Replace(vehicle.LicenseNumber.ToUpper(), String.Empty);
+            vehicle.LicenseNumber = (new Regex("[._-]")).Replace(vehicle.LicenseNumber.ToUpper(), String.Empty);
         /* Image */
         var fileExtension = Path.GetExtension(file.FileName);
         var fileName = $"{Guid.NewGuid()}{fileExtension}";
@@ -68,8 +68,14 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
         var result = new List<string>();
         foreach (var licensePlate in licensePlates)
         {
-            var number = (new Regex("[_-]")).Replace(licensePlate.Number.ToUpper(), String.Empty);
+            var number = (new Regex("[._-]")).Replace(licensePlate.Number.ToUpper(), String.Empty);
             var vehicle = vehicles.FirstOrDefault(_ => _.LicenseNumber == number);
+            if (vehicle == null)
+            {
+                vehicle = new Data.Entities.Vehicle.Vehicle(VehicleTypes.Undefined, null, null, licensePlate.Number.ToUpper());
+                /* Add */
+                _unitOfWork.Repository<Data.Entities.Vehicle.Vehicle>().Add(vehicle);
+            }
             var vehicleLog = new VehicleLog(response.Data.Time, JsonSerializer.Serialize(licensePlate.Coordinate), licensePlate.Number.ToUpper(), fileName, vehicle?.Id);
             /* Add */
             _unitOfWork.Repository<Data.Entities.Vehicle.VehicleLog>().Add(vehicleLog);
@@ -126,7 +132,8 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
         var query = _unitOfWork.DbContext.VehicleLogs
             .Where(_ => _.VehicleId == id)
             .Where(_ => _.Time >= fromDate)
-            .Where(_ => _.Time <= toDate.EndOfDay());
+            .Where(_ => _.Time <= toDate.EndOfDay())
+            .OrderByDescending(_ => _.Time);
         var logs = await query.ToListAsync();
         /* Builder */
         var logModels = new List<VehicleLogResponseModel>();
