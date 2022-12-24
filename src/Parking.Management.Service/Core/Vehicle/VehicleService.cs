@@ -169,7 +169,7 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
                 .Where(_ => string.IsNullOrEmpty(filter.Brand) || _.Brand.ToLower() == filter.Brand.ToLower())
                 .Where(_ => string.IsNullOrEmpty(filter.LicenseNumber) || _.LicenseNumber.ToLower() == filter.LicenseNumber.ToLower())
                 .Where(_ => !filter.Type.HasValue || _.Type == filter.Type.Value)
-                .Where(_ => !filter.HasRegistered.HasValue || (filter.HasRegistered.HasValue && _.CustomerId.HasValue) || (!filter.HasRegistered.HasValue && !_.CustomerId.HasValue));
+                .Where(_ => !filter.HasRegistered.HasValue || (filter.HasRegistered.HasValue && ((filter.HasRegistered.Value && _.CustomerId.HasValue) || (!filter.HasRegistered.Value && !_.CustomerId.HasValue))));
     }
     #endregion
 }

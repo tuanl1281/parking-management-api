@@ -4,6 +4,8 @@ namespace Parking.Management.ViewModel.Vehicle.Response;
 
 public class VehicleLogResponseModel
 {
+    public Guid Id { get; set; }
+    
     public DateTime Time { get; set; }
     
     public string Coordinate { get; set; }
