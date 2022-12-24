@@ -15,6 +15,7 @@ using Parking.Management.Service.Core.Role;
 using Parking.Management.Service.Core.Permission;
 using Parking.Management.Service.Core.Customer;
 using Parking.Management.Service.Core.Site;
+using Parking.Management.Service.Core.Statistic;
 using Parking.Management.Service.Core.Vehicle;
 using Parking.Management.Service.MappingProfiles.Common;
 
@@ -27,6 +28,7 @@ public static class StartupExtension
         services.AddHttpClient<IHttpClientService, HttpClientService>();
         
         services.AddTransient<IFileService, FileService>();
+        services.AddTransient<IStatisticService, StatisticService>();
         
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IRoleService, RoleService>();
