@@ -13,6 +13,7 @@ using Parking.Management.ViewModel.Common.Enum;
 using Parking.Management.ViewModel.Common.Exception;
 using Parking.Management.ViewModel.Common.Response;
 using Parking.Management.ViewModel.Customer.Response;
+using Parking.Management.ViewModel.Statistic.Response;
 using Parking.Management.ViewModel.Vehicle.Request;
 using Parking.Management.ViewModel.Vehicle.Response;
 
@@ -20,13 +21,16 @@ namespace Parking.Management.Service.Core.Vehicle;
 
 public interface IVehicleService: IBaseService<SqlDbContext, Data.Entities.Vehicle.Vehicle, VehicleFilterRequestModel, VehicleResponseModel, VehicleAddRequestModel, VehicleUpdateRequestModel>
 {
-    Task<List<string>> Identify(IFormFile file);
+    Task<List<string>> Identify(VehicleIdentifyRequestModel model);
     
     Task AddCustomer(Guid customerId, Guid id);
     
     Task RemoveCustomer(Guid id);
 
     Task<List<VehicleLogResponseModel>> GetLog(VehicleLogFilterRequestModel filter, Guid id);
+
+    Task<PagingWithStatisticResponseModel<VehicleOverviewStatisticResponseModel, VehicleResponseModel>> GetPagedDetailResult(VehicleFilterRequestModel filter, Guid userId);
+    
     #region --- Utilities ---
     Task<IQueryable<Data.Entities.Vehicle.Vehicle>> GenerateVehicleQuery(VehicleFilterRequestModel filter, Guid userId);
     #endregion
@@ -45,25 +49,37 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
         _httpClientService = httpClientService;
     }
 
-    public async Task<List<string>> Identify(IFormFile file)
+    public async Task<List<string>> Identify(VehicleIdentifyRequestModel model)
     {
+        #region --- Validate ---
         if (string.IsNullOrEmpty(_configuration["Identify:Endpoint"]) || string.IsNullOrEmpty(_configuration["Identify:Token"]))
             throw new ServiceException(null, "Configuration is empty");
+        
+        if (model.IsLog && !model.CameraId.HasValue)
+            throw new ServiceException(null, "CameraId is required");
+        #endregion
         /* Identify */
         var payload = new VehicleIdentifyRequestModel();
-        payload.File = file;
+        payload.File = model.File;
 
         var response = await _httpClientService.PostAsync<ResultResponseModel<VehicleIdentifyResponseModel>>(_configuration["Identify:Endpoint"], payload, ContentTypes.MultipartFormData);
         var licensePlates = response.Data?.LicensePlates ?? new List<VehicleIdentifyLicensePlateRequestModel>();
+
+        if (!model.IsLog)
+            return licensePlates.Where(_ => !string.IsNullOrEmpty(_.Number)).Select(_ => _.Number.ToUpper()).ToList();
         /* Query */
+        var camera = await _unitOfWork.Repository<Data.Entities.Camera.Camera>().GetAsync(_ => _.Id == model.CameraId);
+        if (model.CameraId.HasValue && camera == null)
+            throw new ServiceException(null, "Camera isn't existed");
+    
         var vehicles = await _unitOfWork.Repository<Data.Entities.Vehicle.Vehicle>().GetAllAsync();
         foreach (var vehicle in vehicles)
             vehicle.LicenseNumber = (new Regex("[._-]")).Replace(vehicle.LicenseNumber.ToUpper(), String.Empty);
         /* Image */
-        var fileExtension = Path.GetExtension(file.FileName);
+        var fileExtension = Path.GetExtension(model.File.FileName);
         var fileName = $"{Guid.NewGuid()}{fileExtension}";
 
-        await _fileService.WriteImageRecognition(file.OpenReadStream(), fileName);
+        await _fileService.WriteImageRecognition(model.File.OpenReadStream(), fileName);
         /* Builder */
         var result = new List<string>();
         foreach (var licensePlate in licensePlates)
@@ -76,7 +92,7 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
                 /* Add */
                 _unitOfWork.Repository<Data.Entities.Vehicle.Vehicle>().Add(vehicle);
             }
-            var vehicleLog = new VehicleLog(response.Data.Time, JsonSerializer.Serialize(licensePlate.Coordinate), licensePlate.Number.ToUpper(), fileName, vehicle?.Id);
+            var vehicleLog = new VehicleLog(response.Data.Time, JsonSerializer.Serialize(licensePlate.Coordinate), licensePlate.Number.ToUpper(), fileName, vehicle?.Id, camera?.Id, camera?.SiteId);
             /* Add */
             _unitOfWork.Repository<Data.Entities.Vehicle.VehicleLog>().Add(vehicleLog);
             result.Add(licensePlate.Number.ToUpper());
@@ -162,6 +178,25 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
         /* Builder */
         var result = new PagingResponseModel<VehicleResponseModel>();
         result.Data = _mapper.Map<List<Data.Entities.Vehicle.Vehicle>, List<VehicleResponseModel>>(vehicles);
+        result.TotalCounts = await query.CountAsync();
+        /* Return */
+        return result;
+    }
+
+    public async Task<PagingWithStatisticResponseModel<VehicleOverviewStatisticResponseModel, VehicleResponseModel>> GetPagedDetailResult(VehicleFilterRequestModel filter, Guid userId)
+    {
+        /* Query */
+        var query = await GenerateVehicleQuery(filter, userId);
+        var vehicles = await query
+            .Skip(filter.PageIndex * filter.PageSize)
+            .Take(filter.PageSize)
+            .ToListAsync();
+        /* Builder */
+        var result = new PagingWithStatisticResponseModel<VehicleOverviewStatisticResponseModel, VehicleResponseModel>();
+        result.Data = _mapper.Map<List<Data.Entities.Vehicle.Vehicle>, List<VehicleResponseModel>>(vehicles);
+        result.Statistic.Total = await query.CountAsync();
+        result.Statistic.HasRegistered = await _unitOfWork.DbContext.Vehicles.Where(_ => _.CustomerId.HasValue).CountAsync();
+        result.Statistic.HasntRegistered = await _unitOfWork.DbContext.Vehicles.Where(_ => !_.CustomerId.HasValue).CountAsync();
         result.TotalCounts = await query.CountAsync();
         /* Return */
         return result;

@@ -68,4 +68,10 @@ public class BaseController: ControllerBase
         HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
         return new PagingResponseModel(data, totalCounts);
     }
+    
+    protected PagingWithStatisticResponseModel BuildPagingWithStatisticResponse(object statistic, object data, int totalCounts)
+    {
+        HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
+        return new PagingWithStatisticResponseModel(statistic, data, totalCounts);
+    }
 }

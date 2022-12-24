@@ -1,4 +1,5 @@
 using Parking.Management.ViewModel.Common.Enum;
+using Parking.Management.ViewModel.Customer.Response;
 
 namespace Parking.Management.ViewModel.Vehicle.Response;
 
@@ -13,4 +14,6 @@ public class VehicleResponseModel
     public string Brand { get; set; }
     
     public string LicenseNumber { get; set; }
+    
+    public CustomerResponseModel? Customer { get; set; }
 }

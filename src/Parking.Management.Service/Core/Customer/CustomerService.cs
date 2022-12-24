@@ -19,7 +19,7 @@ public interface ICustomerService: IBaseService<SqlDbContext, Parking.Management
 {
     Task AddVehicle(List<VehicleAddRequestModel> models, Guid id);
 
-    Task RemoveVehicle(List<Guid> vehiclesIds, Guid id);
+    Task RemoveVehicle(List<Guid> vehicleIds, Guid id);
     
     Task<List<VehicleResponseModel>> GetVehicle(Guid id);
 
@@ -91,7 +91,7 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         await _unitOfWork.DbContext.SaveChangesAsync();
     }
 
-    public async Task RemoveVehicle(List<Guid> vehiclesIds, Guid id)
+    public async Task RemoveVehicle(List<Guid> vehicleIds, Guid id)
     {
         #region --- Validate ---
         var customer = await _unitOfWork.Repository<Data.Entities.Customer.Customer>().GetAsync(_ => _.Id == id);
@@ -103,6 +103,9 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         var vehicles = await _unitOfWork.Repository<Data.Entities.Vehicle.Vehicle>().GetManyAsync(_ => _.CustomerId == customer.Id);
         foreach (var vehicle in vehicles)
         {
+            if (!vehicleIds.Contains(vehicle.Id))
+                continue;
+            
             vehicle.CustomerId = null;
             /* Update */
             _unitOfWork.Repository<Data.Entities.Vehicle.Vehicle>().Update(vehicle);

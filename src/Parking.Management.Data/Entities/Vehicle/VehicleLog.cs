@@ -30,6 +30,27 @@ public class VehicleLog: BaseEntity
         VehicleId = vehicleId;
     }
     
+    public VehicleLog(DateTime time, string coordinate, string licenseNumber, string imageRecognition, Guid? vehicleId, Guid? cameraId): base()
+    {
+        Time = time;
+        Coordinate = coordinate;
+        LicenseNumber = licenseNumber;
+        ImageRecognition = imageRecognition;
+        VehicleId = vehicleId;
+        CameraId = cameraId;
+    }
+    
+    public VehicleLog(DateTime time, string coordinate, string licenseNumber, string imageRecognition, Guid? vehicleId, Guid? cameraId, Guid? siteId): base()
+    {
+        Time = time;
+        Coordinate = coordinate;
+        LicenseNumber = licenseNumber;
+        ImageRecognition = imageRecognition;
+        VehicleId = vehicleId;
+        CameraId = cameraId;
+        SiteId = siteId;
+    }
+    
     public DateTime Time { get; set; }
     
     public string Coordinate { get; set; }
@@ -40,5 +61,13 @@ public class VehicleLog: BaseEntity
     
     public Guid? VehicleId { get; set; }
     
-    public virtual Data.Entities.Vehicle.Vehicle Vehicle { get; set; }
+    public virtual Data.Entities.Vehicle.Vehicle Vehicle { get; set; }    
+    
+    public Guid? CameraId { get; set; }
+    
+    public virtual Data.Entities.Camera.Camera Camera { get; set; }    
+    
+    public Guid? SiteId { get; set; }
+    
+    public virtual Data.Entities.Site.Site Site { get; set; }
 }

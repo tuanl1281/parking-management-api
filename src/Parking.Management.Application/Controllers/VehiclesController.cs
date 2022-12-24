@@ -17,10 +17,10 @@ public class VehiclesController: BaseController
     }
     
     [HttpGet]
-    public async Task<ActionResult<PagingResponseModel>> GetPagedResult([FromQuery] VehicleFilterRequestModel filter)
+    public async Task<ActionResult<PagingWithStatisticResponseModel>> GetPagedResult([FromQuery] VehicleFilterRequestModel filter)
     {
-        var result = await _vehicleService.GetPagedResult(filter, Principal.UserId);
-        return BuildPagingResponse(result.Data, result.TotalCounts);
+        var result = await _vehicleService.GetPagedDetailResult(filter, Principal.UserId);
+        return BuildPagingWithStatisticResponse(result.Statistic, result.Data, result.TotalCounts);
     }
 
     [HttpGet("{id}")]
@@ -73,9 +73,9 @@ public class VehiclesController: BaseController
     }
     
     [HttpPost("Identify")]
-    public async Task<ActionResult<ResultResponseModel>> Identify(IFormFile file)
+    public async Task<ActionResult<ResultResponseModel>> Identify([FromForm] VehicleIdentifyRequestModel model)
     {
-        var result = await _vehicleService.Identify(file);
+        var result = await _vehicleService.Identify(model);
         return BuildResultResponse(result);
     }
 }

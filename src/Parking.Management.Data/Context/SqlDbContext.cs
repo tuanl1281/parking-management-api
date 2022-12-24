@@ -8,14 +8,18 @@ using Parking.Management.Data.Entities.Permission;
 using Parking.Management.Data.Entities.Customer;
 using Parking.Management.Data.Entities.Wallet;
 using Parking.Management.Data.Entities.Transaction;
+using Parking.Management.Data.Entities.Site;
+using Parking.Management.Data.Entities.Vehicle;
+using Parking.Management.Data.Entities.Camera;
 using Parking.Management.Data.Configurations.User;
 using Parking.Management.Data.Configurations.Role;
 using Parking.Management.Data.Configurations.Permission;
 using Parking.Management.Data.Configurations.Customer;
+using Parking.Management.Data.Configurations.Site;
 using Parking.Management.Data.Configurations.Wallet;
 using Parking.Management.Data.Configurations.Transaction;
 using Parking.Management.Data.Configurations.Vehicle;
-using Parking.Management.Data.Entities.Vehicle;
+using Parking.Management.Data.Configurations.Camera;
 
 namespace Parking.Management.Data.Context;
 
@@ -71,12 +75,21 @@ public class SqlDbContext: DbContext
     
     public DbSet<VehicleLog> VehicleLogs { get; set; }
     #endregion
+
+    #region --- Site ---
+    public DbSet<Site> Sites { get; set; }
+    #endregion
+    
+    #region --- Camera --
+    public DbSet<Camera> Cameras { get; set; }
+    #endregion
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         /* Config */
         optionsBuilder.UseLazyLoadingProxies();
-        optionsBuilder.UseMySql(_configuration["SqlDb:ConnectionString"], ServerVersion.AutoDetect(_configuration["SqlDb:ConnectionString"]));
+        // optionsBuilder.UseMySql(_configuration["SqlDb:ConnectionString"], ServerVersion.AutoDetect(_configuration["SqlDb:ConnectionString"]));
+        optionsBuilder.UseMySql("Server=141.147.155.1;Port=6603;Database=parking_management;Uid=mariadb;Pwd=deV0ps@#!", ServerVersion.AutoDetect("Server=141.147.155.1;Port=6603;Database=parking_management;Uid=mariadb;Pwd=deV0ps@#!"));
         /* Base */
         base.OnConfiguring(optionsBuilder);
     }
@@ -113,6 +126,14 @@ public class SqlDbContext: DbContext
         #region --- Vehicle ---
         modelBuilder.ApplyConfiguration(new VehicleConfigurations());
         modelBuilder.ApplyConfiguration(new VehicleLogConfigurations());
+        #endregion
+
+        #region --- Site ---
+        modelBuilder.ApplyConfiguration(new SiteConfigurations());
+        #endregion
+        
+        #region --- Camera ---
+        modelBuilder.ApplyConfiguration(new CameraConfigurations());
         #endregion
         
         /* Apply global filter */

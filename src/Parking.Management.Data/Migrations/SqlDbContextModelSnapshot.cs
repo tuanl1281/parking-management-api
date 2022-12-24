@@ -19,6 +19,29 @@ namespace Parking.Management.Data.Migrations
                 .HasAnnotation("ProductVersion", "6.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("Parking.Management.Data.Entities.Camera.Camera", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid?>("SiteId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cameras");
+                });
+
             modelBuilder.Entity("Parking.Management.Data.Entities.Customer.Customer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -119,6 +142,29 @@ namespace Parking.Management.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("RolePermissions");
+                });
+
+            modelBuilder.Entity("Parking.Management.Data.Entities.Site.Site", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sites");
                 });
 
             modelBuilder.Entity("Parking.Management.Data.Entities.Transaction.Transaction", b =>
@@ -332,6 +378,17 @@ namespace Parking.Management.Data.Migrations
                     b.ToTable("Wallets");
                 });
 
+            modelBuilder.Entity("Parking.Management.Data.Entities.Camera.Camera", b =>
+                {
+                    b.HasOne("Parking.Management.Data.Entities.Site.Site", "Site")
+                        .WithMany("Cameras")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Site");
+                });
+
             modelBuilder.Entity("Parking.Management.Data.Entities.Role.RolePermission", b =>
                 {
                     b.HasOne("Parking.Management.Data.Entities.Permission.Permission", "Permission")
@@ -447,6 +504,11 @@ namespace Parking.Management.Data.Migrations
             modelBuilder.Entity("Parking.Management.Data.Entities.Role.Role", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("Parking.Management.Data.Entities.Site.Site", b =>
+                {
+                    b.Navigation("Cameras");
                 });
 
             modelBuilder.Entity("Parking.Management.Data.Entities.Vehicle.Vehicle", b =>

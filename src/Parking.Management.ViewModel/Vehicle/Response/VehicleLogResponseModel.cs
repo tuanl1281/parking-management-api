@@ -1,4 +1,6 @@
+using Parking.Management.ViewModel.Camera.Response;
 using Parking.Management.ViewModel.Customer.Response;
+using Parking.Management.ViewModel.Site.Response;
 
 namespace Parking.Management.ViewModel.Vehicle.Response;
 
@@ -17,4 +19,8 @@ public class VehicleLogResponseModel
     public VehicleResponseModel? Vehicle { get; set; }
     
     public CustomerResponseModel? Customer { get; set; }
+    
+    public CameraResponseModel? Camera { get; set; }
+    
+    public SiteResponseModel? Site { get; set; }
 }
