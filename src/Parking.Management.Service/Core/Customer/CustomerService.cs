@@ -146,7 +146,7 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         /* Transaction */
         var transaction = new Transaction(
             TransactionTypes.Add,
-            DateTimeUtilities.GetLocalDateTime(),
+            DateTimeUtilities.GetLocalDateTime(false),
             model.Amount, 
             model.Amount + wallet.Balance,
             model.Description,
@@ -175,7 +175,7 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         /* Transaction */
         var transaction = new Transaction(
             TransactionTypes.Sub,
-            DateTimeUtilities.GetLocalDateTime(),
+            DateTimeUtilities.GetLocalDateTime(false),
             model.Amount, 
             model.Amount - wallet.Balance,
             model.Description,
