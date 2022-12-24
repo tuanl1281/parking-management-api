@@ -324,6 +324,9 @@ namespace Parking.Management.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid?>("CameraId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("Coordinate")
                         .HasColumnType("longtext");
 
@@ -339,6 +342,9 @@ namespace Parking.Management.Data.Migrations
                     b.Property<string>("LicenseNumber")
                         .HasColumnType("longtext");
 
+                    b.Property<Guid?>("SiteId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("Time")
                         .HasColumnType("datetime(6)");
 
@@ -346,6 +352,10 @@ namespace Parking.Management.Data.Migrations
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CameraId");
+
+                    b.HasIndex("SiteId");
 
                     b.HasIndex("VehicleId");
 
@@ -469,9 +479,21 @@ namespace Parking.Management.Data.Migrations
 
             modelBuilder.Entity("Parking.Management.Data.Entities.Vehicle.VehicleLog", b =>
                 {
+                    b.HasOne("Parking.Management.Data.Entities.Camera.Camera", "Camera")
+                        .WithMany()
+                        .HasForeignKey("CameraId");
+
+                    b.HasOne("Parking.Management.Data.Entities.Site.Site", "Site")
+                        .WithMany()
+                        .HasForeignKey("SiteId");
+
                     b.HasOne("Parking.Management.Data.Entities.Vehicle.Vehicle", "Vehicle")
                         .WithMany("Logs")
                         .HasForeignKey("VehicleId");
+
+                    b.Navigation("Camera");
+
+                    b.Navigation("Site");
 
                     b.Navigation("Vehicle");
                 });

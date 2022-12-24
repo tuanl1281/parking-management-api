@@ -138,7 +138,7 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         if (model.Amount <= 0)
             throw new ServiceException(null, "Require amount greater than zero");
         
-        var wallet = await _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().GetAsync(_ => _.Id == id);
+        var wallet = await _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().GetAsync(_ => _.CustomerId == id);
         if (wallet == null)
             throw new ServiceException(null, "Customer isn't existed");
         #endregion
@@ -167,7 +167,7 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         if (model.Amount <= 0)
             throw new ServiceException(null, "Require amount greater than zero");
         
-        var wallet = await _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().GetAsync(_ => _.Id == id);
+        var wallet = await _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().GetAsync(_ => _.CustomerId == id);
         if (wallet == null)
             throw new ServiceException(null, "Customer isn't existed");
         #endregion
