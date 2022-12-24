@@ -12,6 +12,6 @@ public class CustomerMappingProfiles: Profile
         CreateMap<CustomerUpdateRequestModel, Parking.Management.Data.Entities.Customer.Customer>();
         
         CreateMap<Parking.Management.Data.Entities.Customer.Customer, CustomerResponseModel>()
-            .ForMember(dest => dest.Wallet, src => src.MapFrom(_ => _.Wallet.Balance));
+            .ForMember(dest => dest.Balance, src => src.MapFrom(_ => _.Wallet.Balance));
     }
 }

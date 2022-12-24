@@ -12,5 +12,5 @@ public class CustomerResponseModel
     
     public string Address { get; set; }
     
-    public double Wallet { get; set; }
+    public double Balance { get; set; }
 }
