@@ -31,7 +31,7 @@ public class VehiclesController: BaseController
     }
     
     [HttpGet("{id}/Log")]
-    public async Task<ActionResult<ResultResponseModel>> GetLog([FromQuery] VehicleLogForCustomerFilterRequestModel filter, [FromRoute] Guid id)
+    public async Task<ActionResult<ResultResponseModel>> GetLog([FromQuery] VehicleLogFilterRequestModel filter, [FromRoute] Guid id)
     {
         var result = await _vehicleService.GetLog(filter, id);
         return BuildResultResponse(result);
@@ -70,13 +70,6 @@ public class VehiclesController: BaseController
     {
         await _vehicleService.RemoveCustomer(id);
         return BuildResultResponse(true);
-    }
-    
-    [HttpGet("Log")]
-    public async Task<ActionResult<PagingResponseModel>> GetLogPagedResult([FromQuery] VehicleLogFilterRequestModel filter)
-    {
-        var result = await _vehicleService.GetLogPagedResult(filter, Principal.UserId);
-        return BuildPagingResponse(result.Data, result.TotalCounts);
     }
     
     [HttpPost("Identify")]

@@ -26,13 +26,9 @@ public interface IVehicleService: IBaseService<SqlDbContext, Data.Entities.Vehic
     
     Task RemoveCustomer(Guid id);
 
-    Task<List<VehicleLogResponseModel>> GetLog(VehicleLogForCustomerFilterRequestModel filter, Guid id);
-
-    Task<PagingResponseModel<VehicleLogResponseModel>> GetLogPagedResult(VehicleLogFilterRequestModel filter, Guid userId);
+    Task<List<VehicleLogResponseModel>> GetLog(VehicleLogFilterRequestModel filter, Guid id);
     #region --- Utilities ---
     Task<IQueryable<Data.Entities.Vehicle.Vehicle>> GenerateVehicleQuery(VehicleFilterRequestModel filter, Guid userId);
-
-    Task<IQueryable<Data.Entities.Vehicle.VehicleLog>> GenerateVehicleLogQuery(VehicleLogFilterRequestModel filter, Guid userId);
     #endregion
 }
 
@@ -121,14 +117,14 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
         await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<List<VehicleLogResponseModel>> GetLog(VehicleLogForCustomerFilterRequestModel filter, Guid id)
+    public async Task<List<VehicleLogResponseModel>> GetLog(VehicleLogFilterRequestModel filter, Guid id)
     {
         /* Query */
         var fromDate = filter.FromDate.ToLocalDateTime();
         var toDate = filter.ToDate.ToLocalDateTime();
         
         var query = _unitOfWork.DbContext.VehicleLogs
-            .Where(_ => _.Id == id)
+            .Where(_ => _.VehicleId == id)
             .Where(_ => _.Time >= fromDate)
             .Where(_ => _.Time <= toDate.EndOfDay());
         var logs = await query.ToListAsync();
@@ -163,32 +159,6 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
         /* Return */
         return result;
     }
-    
-    public async Task<PagingResponseModel<VehicleLogResponseModel>> GetLogPagedResult(VehicleLogFilterRequestModel filter, Guid userId)
-    {
-        /* Query */
-        var query = await GenerateVehicleLogQuery(filter, userId);
-        var logs = await query
-            .Skip(filter.PageIndex * filter.PageSize)
-            .Take(filter.PageSize)
-            .ToListAsync();
-        /* Builder */
-        var result = new PagingResponseModel<VehicleLogResponseModel>();
-        foreach (var log in logs)
-        {
-            var logModel = _mapper.Map<Data.Entities.Vehicle.VehicleLog, VehicleLogResponseModel>(log);
-            if (!string.IsNullOrEmpty(log.ImageRecognition))
-                logModel.ImageRecognition = $"{UrlUtilities.GetBaseUrl(new HttpContextAccessor().HttpContext, true)}/{_fileService.GetPathOfImageRecognition(log.ImageRecognition)}";
-            if (log.Vehicle != null && log.Vehicle.Customer != null)
-                logModel.Customer = _mapper.Map<Data.Entities.Customer.Customer, CustomerResponseModel>(log.Vehicle.Customer);
-            /* Add */
-            result.Data.Add(logModel);
-        }
-
-        result.TotalCounts = await query.CountAsync();
-        /* Return */
-        return result;
-    }
 
     #region --- Utilities ---
     public async Task<IQueryable<Data.Entities.Vehicle.Vehicle>> GenerateVehicleQuery(VehicleFilterRequestModel filter, Guid userId)
@@ -200,17 +170,6 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
                 .Where(_ => string.IsNullOrEmpty(filter.LicenseNumber) || _.LicenseNumber.ToLower() == filter.LicenseNumber.ToLower())
                 .Where(_ => !filter.Type.HasValue || _.Type == filter.Type.Value)
                 .Where(_ => !filter.HasRegistered.HasValue || (filter.HasRegistered.HasValue && _.CustomerId.HasValue) || (!filter.HasRegistered.HasValue && !_.CustomerId.HasValue));
-    }    
-    
-    public async Task<IQueryable<Data.Entities.Vehicle.VehicleLog>> GenerateVehicleLogQuery(VehicleLogFilterRequestModel filter, Guid userId)
-    {
-        var fromDate = filter.FromDate.ToLocalDateTime();
-        var toDate = filter.ToDate.ToLocalDateTime();
-        
-        return _unitOfWork.DbContext.VehicleLogs
-                .Where(_ => _.Time >= fromDate)
-                .Where(_ => _.Time <= toDate.EndOfDay())
-                .Where(_ => !filter.HasRegistered.HasValue || (filter.HasRegistered.HasValue && _.VehicleId.HasValue) || (!filter.HasRegistered.HasValue && !_.VehicleId.HasValue));
     }
     #endregion
 }
