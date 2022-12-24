@@ -134,7 +134,7 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
         {
             var logModel = _mapper.Map<Data.Entities.Vehicle.VehicleLog, VehicleLogResponseModel>(log);
             if (!string.IsNullOrEmpty(log.ImageRecognition))
-                logModel.ImageRecognition = $"{UrlUtilities.GetBaseUrl(new HttpContextAccessor().HttpContext, true)}/{_fileService.GetPathOfImageRecognition(log.ImageRecognition)}";
+                logModel.ImageRecognition = $"{UrlUtilities.GetBaseUrl(new HttpContextAccessor().HttpContext, true)}/{_fileService.GeneratePathImageRecognitionForUrl(log.ImageRecognition)}";
             if (log.Vehicle != null && log.Vehicle.Customer != null)
                 logModel.Customer = _mapper.Map<Data.Entities.Customer.Customer, CustomerResponseModel>(log.Vehicle.Customer);
             /* Add */
