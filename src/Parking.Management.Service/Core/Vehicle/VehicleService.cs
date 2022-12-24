@@ -100,18 +100,19 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
             /* Transaction */
             if (vehicle.CustomerId != null && camera?.SiteId != null)
             {
+                var site = await _unitOfWork.Repository<Data.Entities.Site.Site>().GetAsync(_ => _.Id == camera.SiteId);
                 var wallet = await _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().GetAsync(_ => _.CustomerId == vehicle.CustomerId);
                 if (wallet != null)
                 {
                     /* Wallet */
-                    wallet.Balance -= camera.Site.Fee;
+                    wallet.Balance -= site.Fee;
                     _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().Update(wallet);
                     /* Transaction */
                     var transaction = new Transaction(
                         TransactionTypes.Sub,
                         DateTimeUtilities.GetLocalDateTime(false),
-                        camera.Site.Fee, 
-                        camera.Site.Fee - wallet.Balance,
+                        site.Fee, 
+                        site.Fee - wallet.Balance,
                         $"Thu phí",
                         wallet.Id
                     );
