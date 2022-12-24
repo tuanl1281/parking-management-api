@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Parking.Management.Data.Context;
+using Parking.Management.Data.Entities.Transaction;
 using Parking.Management.Data.Entities.Vehicle;
 using Parking.Management.Data.Infrastructures;
 using Parking.Management.Service.Core.Common;
@@ -92,9 +93,33 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
                 /* Add */
                 _unitOfWork.Repository<Data.Entities.Vehicle.Vehicle>().Add(vehicle);
             }
-            var vehicleLog = new VehicleLog(response.Data.Time, JsonSerializer.Serialize(licensePlate.Coordinate), licensePlate.Number.ToUpper(), fileName, vehicle?.Id, camera?.Id, camera?.SiteId);
-            /* Add */
-            _unitOfWork.Repository<Data.Entities.Vehicle.VehicleLog>().Add(vehicleLog);
+            /* Vehicle */
+                var vehicleLog = new VehicleLog(response.Data.Time, JsonSerializer.Serialize(licensePlate.Coordinate), licensePlate.Number.ToUpper(), fileName, vehicle?.Id, camera?.Id, camera?.SiteId);
+                /* Add */
+                _unitOfWork.Repository<Data.Entities.Vehicle.VehicleLog>().Add(vehicleLog);
+            /* Transaction */
+            if (vehicle.CustomerId != null && camera?.SiteId != null)
+            {
+                var wallet = await _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().GetAsync(_ => _.CustomerId == vehicle.CustomerId);
+                if (wallet != null)
+                {
+                    /* Wallet */
+                    wallet.Balance -= camera.Site.Fee;
+                    _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().Update(wallet);
+                    /* Transaction */
+                    var transaction = new Transaction(
+                        TransactionTypes.Sub,
+                        DateTimeUtilities.GetLocalDateTime(false),
+                        camera.Site.Fee, 
+                        camera.Site.Fee - wallet.Balance,
+                        $"Thu phí",
+                        wallet.Id
+                    );
+
+                    _unitOfWork.Repository<Data.Entities.Transaction.Transaction>().Add(transaction);
+                }
+            }
+            /* Another */
             result.Add(licensePlate.Number.ToUpper());
         }
         /* Save */

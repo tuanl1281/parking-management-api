@@ -8,6 +8,8 @@ public class SiteAddRequestModel
     public string Name { get; set; }
     
     public string Address { get; set; }
+    
+    public double Fee { get; set; }
 }
 
 public class SiteUpdateRequestModel: SiteAddRequestModel

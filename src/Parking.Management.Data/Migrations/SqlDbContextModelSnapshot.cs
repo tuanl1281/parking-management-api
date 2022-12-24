@@ -159,6 +159,9 @@ namespace Parking.Management.Data.Migrations
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<double>("Fee")
+                        .HasColumnType("double");
+
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
