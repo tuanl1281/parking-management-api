@@ -278,6 +278,9 @@ namespace Parking.Management.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("Coordinate")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime(6)");
 
@@ -287,10 +290,13 @@ namespace Parking.Management.Data.Migrations
                     b.Property<string>("ImageRecognition")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("LicenseNumber")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("Time")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("VehicleId")
+                    b.Property<Guid?>("VehicleId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
@@ -408,9 +414,7 @@ namespace Parking.Management.Data.Migrations
                 {
                     b.HasOne("Parking.Management.Data.Entities.Vehicle.Vehicle", "Vehicle")
                         .WithMany("Logs")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("VehicleId");
 
                     b.Navigation("Vehicle");
                 });

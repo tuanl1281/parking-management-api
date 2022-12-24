@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Parking.Management.Data.Infrastructures;
 using Parking.Management.Data.Repositories.Common;
+using Parking.Management.Service.Core.Common;
 using Parking.Management.Service.Core.User;
 using Parking.Management.Service.Core.Role;
 using Parking.Management.Service.Core.Permission;
@@ -22,6 +23,10 @@ public static class StartupExtension
 {
     public static void AddBusinessServices(this IServiceCollection services)
     {
+        services.AddHttpClient<IHttpClientService, HttpClientService>();
+        
+        services.AddTransient<IFileService, FileService>();
+        
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IRoleService, RoleService>();
         services.AddTransient<IPermissionService, PermissionService>();

@@ -17,6 +17,21 @@ public class CustomerUpdateRequestModel: CustomerAddRequestModel
 {
 }
 
+public class CustomerWalletDepositRequestModel
+{
+    public double Amount { get; set; }
+    
+    public string Description { get; set; }
+}
+
+public class CustomerWalletWithdrawRequestModel
+{
+    public double Amount { get; set; }
+    
+    public string Description { get; set; }
+}
+
+
 #region --- Utilities ---
 public class CustomerFilterRequestModel: PagingFilterRequest
 {

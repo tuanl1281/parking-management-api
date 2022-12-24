@@ -1,7 +1,10 @@
 using AutoMapper;
 using Parking.Management.Data.Context;
+using Parking.Management.Data.Entities.Transaction;
 using Parking.Management.Data.Infrastructures;
 using Parking.Management.Service.Core.Common;
+using Parking.Management.Service.Utilities;
+using Parking.Management.ViewModel.Common.Enum;
 using Parking.Management.ViewModel.Common.Exception;
 using Parking.Management.ViewModel.Customer.Request;
 using Parking.Management.ViewModel.Customer.Response;
@@ -20,6 +23,10 @@ public interface ICustomerService: IBaseService<SqlDbContext, Parking.Management
     
     Task<List<VehicleResponseModel>> GetVehicle(Guid id);
 
+    Task Deposit(CustomerWalletDepositRequestModel model, Guid id);
+    
+    Task Withdraw(CustomerWalletWithdrawRequestModel model, Guid id);
+    
     Task<List<TransactionResponseModel>> GetTransaction(TransactionFilterRequestModel filter, Guid id);
 }
 
@@ -63,6 +70,7 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         return customer.Id;
     }
 
+    #region --- Vehicle ----
     public async Task AddVehicle(List<VehicleAddRequestModel> models, Guid id)
     {
         #region --- Validate ---
@@ -118,7 +126,67 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         /* Return */
         return vehicleModels;
     }
+    #endregion
+    
+    #region --- Transaction ---
+    public async Task Deposit(CustomerWalletDepositRequestModel model, Guid id)
+    {
+        #region --- Validate ---
+        if (model.Amount <= 0)
+            throw new ServiceException(null, "Require amount greater than zero");
+        
+        var wallet = await _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().GetAsync(_ => _.Id == id);
+        if (wallet == null)
+            throw new ServiceException(null, "Customer isn't existed");
+        #endregion
+        
+        /* Wallet */
+        wallet.Balance += model.Amount;
+        _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().Update(wallet);
+        /* Transaction */
+        var transaction = new Transaction(
+            TransactionTypes.Add,
+            DateTimeUtilities.GetLocalDateTime(),
+            model.Amount, 
+            model.Amount + wallet.Balance,
+            model.Description,
+            wallet.Id
+        );
 
+        _unitOfWork.Repository<Data.Entities.Transaction.Transaction>().Add(transaction);
+        /* Save */
+        await _unitOfWork.SaveChangesAsync();
+    }
+    
+    public async Task Withdraw(CustomerWalletWithdrawRequestModel model, Guid id)
+    {
+        #region --- Validate ---
+        if (model.Amount <= 0)
+            throw new ServiceException(null, "Require amount greater than zero");
+        
+        var wallet = await _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().GetAsync(_ => _.Id == id);
+        if (wallet == null)
+            throw new ServiceException(null, "Customer isn't existed");
+        #endregion
+        
+        /* Wallet */
+        wallet.Balance -= model.Amount;
+        _unitOfWork.Repository<Data.Entities.Wallet.Wallet>().Update(wallet);
+        /* Transaction */
+        var transaction = new Transaction(
+            TransactionTypes.Sub,
+            DateTimeUtilities.GetLocalDateTime(),
+            model.Amount, 
+            model.Amount - wallet.Balance,
+            model.Description,
+            wallet.Id
+        );
+
+        _unitOfWork.Repository<Data.Entities.Transaction.Transaction>().Add(transaction);
+        /* Save */
+        await _unitOfWork.SaveChangesAsync();
+    }
+    
     public async Task<List<TransactionResponseModel>> GetTransaction(TransactionFilterRequestModel filter, Guid id)
     {
         #region --- Validate ---
@@ -138,4 +206,5 @@ public class CustomerService: BaseService<SqlDbContext, Parking.Management.Data.
         /* Return */
         return transactionModels;
     }
+    #endregion
 }

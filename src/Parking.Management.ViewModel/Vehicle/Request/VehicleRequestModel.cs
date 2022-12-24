@@ -38,5 +38,8 @@ public class VehicleFilterRequestModel: PagingFilterRequest
     
     [FromQuery(Name = "type")]
     public VehicleTypes? Type { get; set; }
+
+    [FromQuery(Name = "hasRegistered")] 
+    public bool? HasRegistered { get; set; } = null;
 }
 #endregion

@@ -59,6 +59,13 @@ public class CustomersController: BaseController
         return BuildResultResponse(true);
     }
     
+    [HttpPost("{id}/Deposit")]
+    public async Task<ActionResult<ResultResponseModel>> Deposit([FromBody] CustomerWalletDepositRequestModel model, [FromRoute] Guid id)
+    {
+        await _customerService.Deposit(model, id);
+        return BuildResultResponse(true);
+    }
+
     [HttpPut("{id}")]
     public async Task<ActionResult<ResultResponseModel>> Update([FromBody] CustomerUpdateRequestModel model, [FromRoute] Guid id)
     {
@@ -77,6 +84,13 @@ public class CustomersController: BaseController
     public async Task<ActionResult<ResultResponseModel>> RemoveVehicle([FromBody] List<Guid> models, [FromRoute] Guid id)
     {
         await _customerService.RemoveVehicle(models, id);
+        return BuildResultResponse(true);
+    }
+    
+    [HttpDelete("{id}/Withdraw")]
+    public async Task<ActionResult<ResultResponseModel>> Withdraw([FromBody] CustomerWalletWithdrawRequestModel model, [FromRoute] Guid id)
+    {
+        await _customerService.Withdraw(model, id);
         return BuildResultResponse(true);
     }
 }
