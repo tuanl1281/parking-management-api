@@ -194,10 +194,12 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
         /* Builder */
         var result = new PagingWithStatisticResponseModel<VehicleOverviewStatisticResponseModel, VehicleResponseModel>();
         result.Data = _mapper.Map<List<Data.Entities.Vehicle.Vehicle>, List<VehicleResponseModel>>(vehicles);
+        result.TotalCounts = await query.CountAsync();
+        
+        result.Statistic = new VehicleOverviewStatisticResponseModel();
         result.Statistic.Total = await query.CountAsync();
         result.Statistic.HasRegistered = await _unitOfWork.DbContext.Vehicles.Where(_ => _.CustomerId.HasValue).CountAsync();
         result.Statistic.HasntRegistered = await _unitOfWork.DbContext.Vehicles.Where(_ => !_.CustomerId.HasValue).CountAsync();
-        result.TotalCounts = await query.CountAsync();
         /* Return */
         return result;
     }
