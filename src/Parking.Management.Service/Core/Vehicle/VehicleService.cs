@@ -120,8 +120,8 @@ public class VehicleService: BaseService<SqlDbContext, Data.Entities.Vehicle.Veh
     public async Task<List<VehicleLogResponseModel>> GetLog(VehicleLogFilterRequestModel filter, Guid id)
     {
         /* Query */
-        var fromDate = filter.FromDate.ToLocalDateTime();
-        var toDate = filter.ToDate.ToLocalDateTime();
+        var fromDate = filter.FromDate.ToSystemDateTime();
+        var toDate = filter.ToDate.ToSystemDateTime();
         
         var query = _unitOfWork.DbContext.VehicleLogs
             .Where(_ => _.VehicleId == id)
