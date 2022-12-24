@@ -14,6 +14,7 @@ using Parking.Management.Service.Core.User;
 using Parking.Management.Service.Core.Role;
 using Parking.Management.Service.Core.Permission;
 using Parking.Management.Service.Core.Customer;
+using Parking.Management.Service.Core.Site;
 using Parking.Management.Service.Core.Vehicle;
 using Parking.Management.Service.MappingProfiles.Common;
 
@@ -33,6 +34,7 @@ public static class StartupExtension
 
         services.AddTransient<ICustomerService, CustomerService>();
         services.AddTransient<IVehicleService, VehicleService>();
+        services.AddTransient<ISiteService, SiteService>();
     }
 
     public static void AddRepositories(this IServiceCollection services)
