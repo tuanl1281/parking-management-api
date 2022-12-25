@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Parking.Management.Data.Infrastructures;
 using Parking.Management.Data.Repositories.Common;
+using Parking.Management.Service.Core.Camera;
 using Parking.Management.Service.Core.Common;
 using Parking.Management.Service.Core.User;
 using Parking.Management.Service.Core.Role;
@@ -36,7 +37,10 @@ public static class StartupExtension
 
         services.AddTransient<ICustomerService, CustomerService>();
         services.AddTransient<IVehicleService, VehicleService>();
+        
         services.AddTransient<ISiteService, SiteService>();
+        
+        services.AddTransient<ICameraService, CameraService>();
     }
 
     public static void AddRepositories(this IServiceCollection services)

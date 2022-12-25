@@ -1,3 +1,5 @@
+using Parking.Management.ViewModel.Common.Request;
+
 namespace Parking.Management.ViewModel.Camera.Request;
 
 public class CameraAddRequestModel
@@ -13,3 +15,9 @@ public class CameraUpdateRequestModel
     
     public Guid SiteId { get; set; }
 }
+
+#region --- Utilities ---
+public class CameraFilterRequestModel : PagingFilterRequest
+{
+}
+#endregion
